@@ -67,7 +67,6 @@ const scriptSrcUrls = [
 ];
 const styleSrcUrls = [
     "https://api.mapbox.com/",
-    "https://use.fontawesome.com/",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
 ];
 const connectSrcUrls = [
