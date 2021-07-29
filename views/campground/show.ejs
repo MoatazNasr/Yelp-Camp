@@ -1,0 +1,173 @@
+<% layout('layout/boilerplate') %>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <link rel="stylesheet" href="/stylesheets/stars.css">
+
+
+
+    <div class="row ">
+
+        <div class="col-6">
+
+            <div class="card mb-5">
+                <div id="campgroundIMGS" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+                    <% foundObj.images.forEach ( (img,i)=> {%>
+
+                        <div class="carousel-item <%= i===0 ? 'active': '' %> ">
+
+                            <img src=<%=img.url%> class=" w-100" >
+                        </div>
+
+                        <% }) %>
+                            <% if (foundObj.images.length> 1) { %>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#campgroundIMGS"
+                                    data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#campgroundIMGS"
+                                    data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                                <%} %>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%=foundObj.title %>
+                    </h5>
+
+                    <p class="card-text-muted">
+                        <%= foundObj.description %>
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        Submitted by :<%= foundObj.author.username%>
+                    </li>
+                    <li class="list-group-item">
+                        <%= foundObj.location %>
+                    </li>
+                    <li class="list-group-item">
+                        $<%= foundObj.price %>
+                    </li>
+
+                </ul>
+
+                <% if ( currentUser && foundObj.author._id.equals(currentUser._id) ){ %>
+
+                    <div class="card-body d-flex flex-row justify-content-around">
+                        <a class=" btn btn-info fas fa-pen-fancy" href="/campground/<%=foundObj.id%>/edit"></a>
+                        <form class=" d-inline" action="/campground/<%=foundObj.id%>?_method=delete" method="POST">
+
+                            <button class="btn btn-danger fas fa-trash"></button>
+
+                        </form>
+                    </div>
+                    <!-- used currentUser then && operator to ensure that if curretUser does not exist do not chech the 2nd condition -->
+                    <!-- as it goes error when accessing a field in an undefined  Object  -->
+                    <% } %>
+            </div>
+
+
+        </div>
+
+
+        <div class="col-6 ">
+
+            <div id='map' ></div>
+
+            <h4 class="my-3 offset-4">Leave a review</h4>
+
+            <% if (currentUser) {%>
+              
+
+                <form action="/campground/<%=foundObj._id%>/reviews" class="mb-3 validated-form" novalidate
+                    method="POST">
+                    <!-- <div>
+
+                        <label class="form-label" for="rating">Rating</label>
+                        <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]"
+                            required>
+
+                    </div> -->
+
+                    <fieldset class="starability-fade">
+                        <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
+                            aria-label="No rating." />
+                        <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                        <label for="first-rate1" title="Terrible">1 star</label>
+                        <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                        <label for="first-rate2" title="Not good">2 stars</label>
+                        <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                        <label for="first-rate3" title="Average">3 stars</label>
+                        <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                        <label for="first-rate4" title="Very good">4 stars</label>
+                        <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                        <label for="first-rate5" title="Amazing">5 stars</label>
+                    </fieldset>
+
+                    <div class="mb-3">
+
+                        <div class="mb-3">
+
+                            <label class="form-label" for="body">Review </label>
+    
+                            <textarea class="form-control" name="review[body]" id="body" required></textarea>
+
+                        </div>
+    
+                        <button class="btn btn-success fas fa-pen  col-3 offset-9 mb-3"></button>
+
+                </form>
+
+                <% } %>
+
+                <% for (let review of foundObj.reviews) {%>
+                    <section class="card mb-3 ">
+
+                        <div class="card-body">
+
+
+                            <p class="card-subtitle">By :<%=review.author.username%>
+                            </p>
+
+                            <p class="starability-result" data-rating="<%=review.rating%>">
+                                Rated: <%= review.rating %> stars
+                            </p>
+
+                            <h5 class="card-text">Review: <%=review.body%>
+                            </h5>
+
+                            <% if ( currentUser && review.author._id.equals(currentUser._id) ){ %>
+                                <form   action="/campground/<%=foundObj._id%>/reviews/<%=review._id%>?_method=DELETE"
+                                    method="POST">
+
+                                    <button class="btn btn-danger fas fa-trash "></button>
+
+                                </form>
+                                <% } %>
+                        </div>
+
+                    </section>
+                    <%} %>
+
+                       
+        </div>
+
+
+
+    </div>
+
+    <script>
+        const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
+        const campground = <%- JSON.stringify(foundObj) %>;
+        // not an error
+        // this will executed 1st and will be sent to any script used in this template
+    </script>
+    
+    <!-- also used to pass a variable from EJS file to JS file -->
+     <script src="/javascripts/showPageMap.js"></script> 
