@@ -200,11 +200,12 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err })
 })
 
+const port = process.env.PORT || 3020;
+// will automatically get value by heroku same as secret 
 
+app.listen(port, () => {
 
-app.listen(3020, () => {
-
-    console.log('Server is on Port 3020')
+    console.log(`Server is on Port ${port}`)
 
 })
 
