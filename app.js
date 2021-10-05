@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production'){
 // process.env.NODE_ENV , environment variable where if we are in development state
 // take the vars in .env file and put them in the proccess..... variable 
 //if not we do not take the file data 
+
 const express = require('express');
 const app = express();
 const path = require('path');
