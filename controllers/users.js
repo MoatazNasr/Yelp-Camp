@@ -25,8 +25,6 @@ module.exports.register = async (req, res,next) => {
             if (err) return next(err);
 
             req.flash('success', 'welcome');
-            res.redirect('/campground');
-
         });
         // login method added by passport and used to login immediately after registeration
         
