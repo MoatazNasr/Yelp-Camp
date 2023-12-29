@@ -183,8 +183,8 @@ app.use('/campground', campgroundsRoutes);
 app.use('/campground/:id/reviews', reviewsRoutes);
 app.use('/', usersRoutes);
 
-app.get('/',(req,res)=>{
-    res.render('/')
+app.get('/home',(req,res)=>{
+    res.render('home')
 })
 app.all('*', (req, res, next) => {
 
